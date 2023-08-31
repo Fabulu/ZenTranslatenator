@@ -27,9 +27,16 @@ Usage Instructions:
 
 It works for me. That's about all I can say. No error handling. It eats money. It's badly tested. You're on your own.
 
+Please give me feedback on the reddit forums, I'm /u/dota2nub. I'll work to improve this if there is some kind of engagement and people want this.
+
 Screenshots to check out: 
 
+This is what the program looks like:
 ![Screenshot](./ZenTranslatenator/Resources/Screenshot.png)
+
+This is a sample GPT 3.5 translation
 ![GPT 3.5](./ZenTranslatenator/Resources/ScreenshotGPT35.png)
+
+This is a sample GPT 4 translation
 ![GPT 4](./ZenTranslatenator/Resources/ScreenshotGPT4.png)
 
