@@ -22,7 +22,7 @@ Usage Instructions:
 8. Pick a ChatGPT Version to use. I recommend version 4, but it will cost you more and generating will take longer.
 9. Enter your OpenAI API key.
 10. Press Translate (WARNING: THIS WILL COST YOU MONEY).
-11. Watch the magnificent Enso animation. When it stops, your translation is ready. Check that folder. Yeah, I won't open it for you. This stepp **will** take a while, even for small texts. Expect to leave your computer on overnight if it's some massive text. Oh, and if it crashes during this process you're shit ouf of luck and your money and time is gone. I should probably work on that, huh?
+11. Watch the magnificent Enso animation. When it stops, your translation is ready. Check that folder. Yeah, I won't open it for you. This step **will** take a while, even for small texts. Expect to leave your computer on overnight if it's some massive text. Oh, and if it crashes during this process you're shit ouf of luck and your money and time is gone. I should probably work on that, huh?
 
 
 It works for me. That's about all I can say. No error handling. It eats money. It's badly tested. You're on your own.
