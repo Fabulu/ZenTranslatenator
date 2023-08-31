@@ -9,6 +9,12 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using Microsoft.Win32;
 using Newtonsoft.Json;
+using OpenAI_API;
+using OpenAI_API.Completions;
+using PdfSharp.Pdf;
+using PdfSharp.Drawing;
+using System.Threading.Tasks;
+using PdfSharp.Drawing.Layout;
 
 namespace ZenTranslatenator
 {
@@ -16,6 +22,8 @@ namespace ZenTranslatenator
     {
         private List<string> _textChunks;
         private int _currentChunkIndex;
+        private const int MaxCharacterCount = 500;  // Set this according to the desired character limit
+
 
         public MainWindow()
         {
@@ -24,16 +32,153 @@ namespace ZenTranslatenator
             _currentChunkIndex = 0;
         }
 
-        private void Translate(object sender, RoutedEventArgs e)
+        private async void Translate(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(APIKey.Text))
-            {
+
+            if (String.IsNullOrEmpty(APIKey.Text)){
                 MessageBox.Show("Please provide your OpenAI API Key!");
                 return;
             }
+            // For the sake of simplicity, assuming the chunks are small enough to be translated within the API limit
+            // You might want to further chunkify them based on token count if necessary
 
-            // You'll need to implement the OpenAI API call here.
-            // Use the HttpClient or another similar library to POST to the API endpoint with the required data.
+            List<string> originalChunks = _textChunks; // Assuming you have this method already or similar
+            List<string> translatedChunks = new List<string>();
+
+            foreach (string chunk in originalChunks)
+            {
+                string translatedText = await TranslateWithOpenAI(chunk);
+                translatedChunks.Add(translatedText);
+            }
+
+            CreatePdf(originalChunks, translatedChunks, OutputFolder.Text);
+            StartEnsoAnimation(1);
+            
+        }
+
+        private async Task<string> TranslateWithOpenAI(string inputText)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {APIKey.Text}");
+
+                var messages = new List<object>
+        {
+            new { role = "system", content = $"{AIPrimer.Text} {AdditionalNotes.Text}" },
+            new { role = "user", content = $"Translate: {inputText}" }
+        };
+                string selectedModel = ((ComboBoxItem)GptVersionComboBox.SelectedItem).Content.ToString();
+                var payload = new
+                {
+                    model = selectedModel,
+                    messages = messages
+                };
+                StartEnsoAnimation(60000);
+
+                try
+                {
+                    var response = await httpClient.PostAsync("https://api.openai.com/v1/chat/completions",
+                        new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"));
+
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        dynamic parsedResponse = JsonConvert.DeserializeObject(jsonResponse);
+                        return parsedResponse.choices[0].message.content;
+                    }
+                    else
+                    {
+                        dynamic parsedResponse = JsonConvert.DeserializeObject(jsonResponse);
+                        string errorMsg = parsedResponse.error.message ?? "Unknown error";
+                        return $"Error occurred during translation: {errorMsg} (Status code: {response.StatusCode})";
+                    }
+                }
+                catch (HttpRequestException ex)
+                {
+                    // This will catch any errors related to network or connection
+                    return $"Error occurred during API call: {ex.Message}";
+                }
+                catch (Exception ex)
+                {
+                    // General error catch to ensure application does not crash
+                    return $"Unexpected error: {ex.Message}";
+                }
+            }
+        }
+
+        private void CreatePdf(IEnumerable<string> originalChunks, IEnumerable<string> translatedChunks, string outputPath)
+        {
+            PdfDocument document = new PdfDocument();
+
+            // Check if the directory exists and create it if it doesn't
+            var directory = Path.GetDirectoryName(outputPath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            // Append numbers to the filename if it already exists
+            var fileBase = Path.GetFileNameWithoutExtension(outputPath);
+            var directoryPath = Path.GetDirectoryName(outputPath);
+            var extension = Path.GetExtension(outputPath);
+            int counter = 1;
+
+            while (File.Exists(outputPath))
+            {
+                outputPath = Path.Combine(directoryPath, $"{fileBase} ({counter++}){extension}");
+            }
+
+            IEnumerator<string> originalEnumerator = originalChunks.GetEnumerator();
+            IEnumerator<string> translatedEnumerator = translatedChunks.GetEnumerator();
+
+
+            while (originalEnumerator.MoveNext() && translatedEnumerator.MoveNext())
+            {
+
+                int iterator = 0;
+                StringBuilder stringBuilder = new StringBuilder();
+
+                foreach (char item in  originalEnumerator.Current)
+                {
+                    stringBuilder.Append(item);
+                    iterator += 1;
+
+                    if (iterator > 30)
+                    {
+                        if (item == '。')
+                        {
+                            stringBuilder.Append("\r\n");
+                            iterator = 0;
+                        }
+                    }
+                    else if (iterator > 40)
+                    {
+                        stringBuilder.Append("\r\n");
+                        iterator = 0;
+                    }
+                }
+
+                // Create a new page and draw the Chinese text
+                PdfPage page1 = document.AddPage();
+                XGraphics gfx1 = XGraphics.FromPdfPage(page1);
+                XFont font1 = new XFont("Arial Unicode MS", 12, XFontStyle.Regular);
+                XRect xRect1 = new XRect(50, 50, page1.Width - 100, page1.Height - 100);
+                XTextFormatter tf1 = new XTextFormatter(gfx1);
+                gfx1.DrawRectangle(XBrushes.SeaShell, xRect1);
+                tf1.DrawString(stringBuilder.ToString(), font1, XBrushes.Black, xRect1, XStringFormats.TopLeft);
+
+                // Create another new page and draw the translated text
+                PdfPage page2 = document.AddPage();
+                XGraphics gfx2 = XGraphics.FromPdfPage(page2);
+                XFont font2 = new XFont("Arial Unicode MS", 12, XFontStyle.Regular);
+                XRect xRect2 = new XRect(50, 50, page1.Width - 100, page1.Height - 100);
+                XTextFormatter tf2 = new XTextFormatter(gfx2);
+                gfx2.DrawRectangle(XBrushes.SeaShell, xRect2);
+                tf2.DrawString(translatedEnumerator.Current, font2, XBrushes.Black, xRect2, XStringFormats.TopLeft);
+            }
+
+            document.Save(outputPath);
         }
 
         private async void CallOpenAIAPI(string text)
@@ -77,6 +222,11 @@ namespace ZenTranslatenator
 
         private void ChunkifyText_Click(object sender, RoutedEventArgs e)
         {
+
+            //Initialize text chunk variable
+
+            _textChunks.Clear();
+
             // This will break up the input text into manageable chunks while trying to preserve context.
             // The 4000 tokens limit is abstract. In this example, I'll use character count as an approximation.
             string text = TextToTranslate.Text;
@@ -93,13 +243,15 @@ namespace ZenTranslatenator
                 ChunkPreview.Text = _textChunks[0];
             }
             Chunks.Content = "Chunk 1 of " + _textChunks.Count;
-            StartEnsoAnimation();
+            StartEnsoAnimation(1);
         }
+
 
         private void NextChunk_Click(object sender, RoutedEventArgs e)
         {
             if (_currentChunkIndex < _textChunks.Count - 1)
             {
+                _textChunks[_currentChunkIndex] = ChunkPreview.Text;
                 _currentChunkIndex++;
                 ChunkPreview.Text = _textChunks[_currentChunkIndex];
                 Chunks.Content = "Chunk " + (_currentChunkIndex + 1) + " of " + _textChunks.Count;
@@ -110,13 +262,14 @@ namespace ZenTranslatenator
         {
             if (_currentChunkIndex > 0)
             {
+                _textChunks[_currentChunkIndex] = ChunkPreview.Text;
                 _currentChunkIndex--;
                 ChunkPreview.Text = _textChunks[_currentChunkIndex];
                 Chunks.Content = "Chunk " + (_currentChunkIndex + 1) + " of " + _textChunks.Count;
             }
         }
 
-        private void StartEnsoAnimation()
+        private void StartEnsoAnimation(int numberOfRotations)
         {
             RotateTransform rotateTransform = new RotateTransform();
             EnsoImage.RenderTransform = rotateTransform;
@@ -125,12 +278,13 @@ namespace ZenTranslatenator
             {
                 From = 0,
                 To = 360,
-                Duration = new Duration(TimeSpan.FromSeconds(5)),
-                RepeatBehavior = new RepeatBehavior(1)
+                Duration = new Duration(TimeSpan.FromSeconds(1)),
+                RepeatBehavior = new RepeatBehavior(numberOfRotations)
             };
 
             rotateTransform.BeginAnimation(RotateTransform.AngleProperty, animation);
         }
+
 
     }
 }

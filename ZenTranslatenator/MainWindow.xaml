@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="r/zen Translatenator" Height="700" Width="900">
     <Grid>
-        <Image x:Name="EnsoImage" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,364,179" Source="/Enso.svg (2).png" Stretch="None"/>
+        <Image x:Name="EnsoImage" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,364,179" Source="/Enso.png" Stretch="None"/>
 
         <Button x:Name="TranslateButton" Content="Translate" HorizontalAlignment="Left" Margin="736,592,0,0" VerticalAlignment="Top" Click="Translate" Height="26" Width="86"/>
 
@@ -16,19 +16,24 @@
 
         <TextBox x:Name="TextToTranslate" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" Margin="162,192,0,0" TextWrapping="Wrap" AcceptsReturn="True" VerticalAlignment="Top" Width="192" Height="120" TextChanged="TextBox_TextChanged"/>
         <TextBox x:Name="AIPrimer" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" Margin="516,77,0,0" TextWrapping="Wrap" AcceptsReturn="True" VerticalAlignment="Top" Width="250" Height="82" TextChanged="TextBox_TextChanged" Text="This is a Zen text from Ancient China"/>
-        <TextBox x:Name="AdditionalNotes" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" Margin="516,225,0,0" TextWrapping="Wrap" AcceptsReturn="True" VerticalAlignment="Top" Width="250" Height="82" TextChanged="TextBox_TextChanged" Text="Please translate this text. Add your own commentary in [brackets] where neccessary and add footnotes for difficult words to explain your translation choices."/>
+        <TextBox x:Name="AdditionalNotes" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" Margin="516,225,0,0" TextWrapping="Wrap" AcceptsReturn="True" VerticalAlignment="Top" Width="250" Height="82" TextChanged="TextBox_TextChanged" Text="Please translate this text into English, but don't preface it by talking about what you're doing. Add your own commentary in [brackets] where appropriate. Ignore it when the translation cuts off mid-sentence, that's part of the next chunk you don't have yet. Please add footnotes for difficult words to explain your translation choices and talk about why you chose specific translations, but keep your own interpretations on the meaning of the text out of it. Only discuss semantics."/>
         <Label x:Name="AdditionalNotesLabel" Content="Enter any additional notes here" HorizontalAlignment="Left" Margin="516,192,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.474,3.295"/>
-        <Button x:Name="ChunkifyText" Content="Chunkify the text" HorizontalAlignment="Left" Margin="196,322,0,0" VerticalAlignment="Top" Width="120" Click="ChunkifyText_Click"/>
-        <TextBox x:Name="ChunkPreview" IsReadOnly="true" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" Margin="134,511,0,0" TextWrapping="Wrap" AcceptsReturn="True" VerticalAlignment="Top" Width="308" Height="102" TextChanged="TextBox_TextChanged"/>
-        <Label x:Name="ChunkPreviewLabel" Content="Preview the way the text will be split into chunks / pages" HorizontalAlignment="Left" Margin="134,480,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.474,3.295"/>
+        <Button x:Name="ChunkifyTextButton" Content="Chunkify the text" HorizontalAlignment="Left" Margin="196,322,0,0" VerticalAlignment="Top" Width="120" Click="ChunkifyText_Click"/>
+        <TextBox x:Name="ChunkPreview" IsReadOnly="false" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" Margin="134,511,0,0" TextWrapping="Wrap" AcceptsReturn="True" VerticalAlignment="Top" Width="308" Height="102" TextChanged="TextBox_TextChanged"/>
+        <Label x:Name="ChunkPreviewLabel" Content="Control the way the text will be split into chunks / pages" HorizontalAlignment="Left" Margin="134,480,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.474,3.295"/>
         <Button x:Name="NextChunk" Content="&gt;" HorizontalAlignment="Left" Margin="414,618,0,0" VerticalAlignment="Top" Width="28" Click="NextChunk_Click"/>
         <Button x:Name="PreviousChunk" Content="&lt;" HorizontalAlignment="Left" Margin="371,618,0,0" VerticalAlignment="Top" Width="24" RenderTransformOrigin="1.417,0.328" Click="PreviousChunk_Click"/>
         <TextBox x:Name="OutputFolder" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" Margin="516,355,0,0" TextWrapping="Wrap" AcceptsReturn="True" VerticalAlignment="Top" Width="231" Height="22" TextChanged="TextBox_TextChanged" Text="C:\ZenPDFs\translatenatedPDF.pdf"/>
         <Label Content="Output File" HorizontalAlignment="Left" Margin="516,0,0,0" VerticalAlignment="Center" Width="132"/>
         <Button x:Name="PickFolder" Content="Pick Folder" HorizontalAlignment="Left" Margin="752,356,0,0" VerticalAlignment="Top" Click="PickFolder_Click"/>
-        <TextBox x:Name="APIKey" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" Margin="516,434,0,0" TextWrapping="Wrap" AcceptsReturn="True" VerticalAlignment="Top" Width="231" Height="22" TextChanged="TextBox_TextChanged"/>
-        <Label Content="Your OpenAI API key" HorizontalAlignment="Left" Margin="516,403,0,0" VerticalAlignment="Top" Width="132"/>
+        <TextBox x:Name="APIKey" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" Margin="516,511,0,0" TextWrapping="Wrap" AcceptsReturn="True" VerticalAlignment="Top" Width="231" Height="22" TextChanged="TextBox_TextChanged"/>
+        <Label Content="Your OpenAI API key" HorizontalAlignment="Left" Margin="516,480,0,0" VerticalAlignment="Top" Width="132"/>
         <Label x:Name="Chunks" Content="" HorizontalAlignment="Left" Margin="134,615,0,0" VerticalAlignment="Top" Width="220"/>
+        <ComboBox x:Name="GptVersionComboBox" HorizontalAlignment="Left" Margin="516,432,0,0" VerticalAlignment="Top" Width="250" Height="29">
+            <ComboBoxItem Content="gpt-3.5-turbo" IsSelected="True"/>
+            <ComboBoxItem Content="gpt-4"/>
+        </ComboBox>
+        <Label Content="ChatGPT Version (4 costs more, takes longer, gives better results)" HorizontalAlignment="Left" Margin="516,406,0,0" VerticalAlignment="Top" Width="356"/>
 
 
     </Grid>
