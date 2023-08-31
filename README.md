@@ -6,7 +6,7 @@ Installation Instructions:
 
 1. It is vital that you download this font: https://www.download-free-fonts.com/details/88978/arial-unicode-ms
 2. Install it by double clicking it and installing it or by putting it into your C:\Windows\Fonts directory.
-3. Download the Zip File from releases
+3. Download the Zip File from releases (It's somewhere to your right. Don't be intimidate by all the other stuff on this Website. Deep breath.)
 4. Install the program
 5. It will launch on its own after installing. If you want to start it after, just type "Zentranslatenator" into your Windows search bar and it'll show up.
 
