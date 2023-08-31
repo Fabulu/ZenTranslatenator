@@ -8,4 +8,5 @@ Install it by double clicking it and installing it or by putting it into your C:
 
 Screenshots to check out: 
 
-![./ZenTranslatenator/Resources/Screenshot.png]
+![Screenshot](./ZenTranslatenator/Resources/Screenshot.png)
+
