@@ -15,7 +15,7 @@ Usage Instructions:
 1. Paste your Chinese text (It can be as massive as you want, go nuts, put the Blue Cliff Record in there!).
 2. Press "Chunkify the text".
 3. Watch the incredible Enso animation.
-4. Check out the text window below. Your text was conveniently split up into pages for you. It doesn't care about any kind of meaningul splitting up of the text, so if you want a nice PDF you have to make sure to check out all the chunks and edit them wherever you feel is a need to. (I might fix up a solution to make the chunk generator better later, but don't hold your breath).
+4. Check out the text window below. Your text was conveniently split up into pages for you. It doesn't care about any kind of meaningul splitting up of the text, so if you want a nice PDF you have to make sure to check out all the chunks and edit them wherever you feel there is a need to. (I might fix up a solution to make the chunk generator better later, but don't hold your breath).
 5. Give a description of your text in the text box on the top right.
 6. Edit the instructions for the translator AI to your liking.
 7. Pick the folder the PDF should be put into. Defaults to C:\ZenPDFs\translatenatedPDF.pdf (If you make multiples with the same filename don't worry, it won't overwrite, it'll just add a number to the filename).
