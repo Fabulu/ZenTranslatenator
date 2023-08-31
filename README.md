@@ -9,4 +9,6 @@ Install it by double clicking it and installing it or by putting it into your C:
 Screenshots to check out: 
 
 ![Screenshot](./ZenTranslatenator/Resources/Screenshot.png)
+![GPT 3.5](./ZenTranslatenator/Resources/ScreenshotGPT35.png)
+![GPT 4](./ZenTranslatenator/Resources/ScreenshotGPT4.png)
 
